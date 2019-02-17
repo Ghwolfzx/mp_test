@@ -33,14 +33,13 @@ class PayController extends Controller
     {
         $app = EasyWeChat::officialAccount();
         $oauth = $app->oauth;
-        if (empty($_SESSION['wechat_user'])) {
-            $_SESSION['target_url'] = 'login';
+        if (empty(Cache::get('wechat_user'))) {
+            Cache::put('target_url', 'login', 100);
 
             return $oauth->redirect();
         }
-        dd($_SESSION['wechat_user']);
         // 已经登录过
-        $user = $_SESSION['wechat_user'];
+        $user = Cache::get('wechat_user');
         return $user;
     }
 
@@ -52,9 +51,9 @@ class PayController extends Controller
         // 获取 OAuth 授权结果用户信息
         $user = $oauth->user();
 
-        $_SESSION['wechat_user'] = $user->toArray();
+        Cache::put('wechat_user', $user->toJson(), 100);
 
-        $targetUrl = empty($_SESSION['target_url']) ? '/' : $_SESSION['target_url'];
+        $targetUrl = Cache::get('target_url') ?? '/';
 
         header('location:'. $targetUrl); // 跳转到 user/profile
     }
