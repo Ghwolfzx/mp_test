@@ -33,14 +33,14 @@ class PayController extends Controller
             return ['status' => 'false', 'msg' => 'code is null'];
         }
         $app = EasyWeChat::miniProgram();
-        $oauth = $app->oauth->session($request->code);
-        Log::debug('miniProgram_user' . $oauth->toJson());
+        $auth = $app->auth->session($request->code);
+        Log::debug('miniProgram_user' . $auth->toJson());
 
-        if ($oauth->errcode != 0) {
-            Log::error('miniProgram_user' . $oauth->toJson());
+        if ($auth->errcode != 0) {
+            Log::error('miniProgram_user' . $auth->toJson());
             return ['status' => 'false', 'msg' => '登录异常'];
         }
-        Cache::put('miniProgram_user', $oauth->toJson(), 100);
+        Cache::put('miniProgram_user', $auth->toJson(), 100);
         return ['status' => 'true', 'userid' => 1, 'token' => md5(1)];
     }
 
