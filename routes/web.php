@@ -11,7 +11,9 @@
 |
 */
 
+// 小程序
+Route::get('mini/login', 'MiniProgramController@login');
+
 Route::get('pay', 'PayController@index');
-Route::get('code', 'PayController@code');
 Route::get('login', 'PayController@login');
 Route::get('oauth_callback', 'PayController@oauthCallback');
