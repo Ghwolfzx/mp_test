@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Pay;
+use Log;
 use Cache;
 use EasyWeChat;
 use Illuminate\Http\Request;
@@ -25,12 +26,43 @@ class PayController extends Controller
         dd($result);
     }
 
-    public function code()
+    public function code(Request $request)
     {
+        $app = EasyWeChat::miniProgram();
+        $oauth = $app->oauth->session($request->code);
+        Log::debug('miniProgram_user' . $oauth->toJson());
+
+        if ($oauth->errcode != 0) {
+            Log::error('miniProgram_user' . $oauth->toJson());
+            return ['status' => 'false', 'msg' => '登录异常'];
+        }
+        Cache::put('miniProgram_user', $oauth->toJson(), 100);
+        return ['status' => 'true', 'userid' => 1, 'token' => md5(1)];
     }
 
     public function login()
     {
+        /*$user = '{
+            "id": "oG9AV1hYn-DUJNZJZSRBhvuAA7i4",
+            "name": "任中兴",
+            "nickname": "任中兴",
+            "avatar": "http:\/\/thirdwx.qlogo.cn\/mmopen\/vi_32\/Q0j4TwGTfTLeVGibjfRekLv2WiaLwSmjnE4wUyRUaYBhCPp1XJzBJxPPd4lgqh6NlqOhzL1KFQhcH1tzm7YKibmdg\/132",
+            "email": null,
+            "original": {
+                "openid": "oG9AV1hYn-DUJNZJZSRBhvuAA7i4",
+                "nickname": "任中兴",
+                "sex": 1,
+                "language": "zh_CN",
+                "city": "",
+                "province": "北京",
+                "country": "中国",
+                "headimgurl": "http:\/\/thirdwx.qlogo.cn\/mmopen\/vi_32\/Q0j4TwGTfTLeVGibjfRekLv2WiaLwSmjnE4wUyRUaYBhCPp1XJzBJxPPd4lgqh6NlqOhzL1KFQhcH1tzm7YKibmdg\/132",
+                "privilege": [],
+                "unionid": "oiBRlwIM_-iUSnPhy8sSapyxaY3M"
+            },
+            "token": "18_sS-kvhHRBnZq51Z6Psfbew3qEJtm-3p7KZNkpJBBWqSqi3bfsO7vpv1GLwaWfg_BkR8wPBzDoGPITx94eVdhAQ",
+            "provider": "WeChat"
+        }';*/
         $app = EasyWeChat::officialAccount();
         $oauth = $app->oauth;
         if (empty(Cache::get('wechat_user'))) {
@@ -40,6 +72,7 @@ class PayController extends Controller
         }
         // 已经登录过
         $user = Cache::get('wechat_user');
+        Log::debug('wechat_user' . $user->toJson());
         return $user;
     }
 
