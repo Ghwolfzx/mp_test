@@ -28,6 +28,10 @@ class PayController extends Controller
 
     public function code(Request $request)
     {
+        $code = $request->code ?? '';
+        if (empty($code)) {
+            return ['status' => 'false', 'msg' => 'code is null'];
+        }
         $app = EasyWeChat::miniProgram();
         $oauth = $app->oauth->session($request->code);
         Log::debug('miniProgram_user' . $oauth->toJson());
