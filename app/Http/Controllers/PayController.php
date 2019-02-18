@@ -72,7 +72,7 @@ class PayController extends Controller
         }
         // 已经登录过
         $user = Cache::get('wechat_user');
-        Log::debug('wechat_user' . $user->toJson());
+        Log::debug('wechat_user' . $user);
         return $user;
     }
 
