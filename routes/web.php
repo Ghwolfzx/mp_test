@@ -13,6 +13,7 @@
 
 // 小程序
 Route::get('mini/login', 'MiniProgramController@login');
+Route::post('mini/check_login', 'MiniProgramController@checkLogin');
 
 Route::get('pay', 'PayController@index');
 Route::get('login', 'PayController@login');
